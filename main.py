@@ -163,7 +163,18 @@ def studentAttendance():
               font=("cambria", 20))
     l.pack()
     f = Frame(win, bg="#487fff")
-    f.pack()
+
+    f.pack(side=LEFT)
+
+    giveAttn = Button(f,text="Give Attendance",font=("cambria", 12))
+    giveAttn.grid(row=2,column=0)
+
+    f1 = Frame(win, bg="#487fff")
+
+    f1.pack(side=RIGHT)
+
+    checkattn = Button(f1,text="Attendance Details",font=("cambria", 12))
+    checkattn.grid(row=2,column=1)
 
 def latestUpdates():
     win = tk.Tk()
