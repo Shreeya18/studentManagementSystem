@@ -8,7 +8,7 @@ import mysql.connector
 #The main Window from where we can select multiple options for required services
 def mainWindow():
     window = tk.Tk()
-    window.geometry('430x300')
+    window.geometry('420x300')
     window.title("Student Manager")
     title = Label(window,text="STUDENT MANAGEMENT SYSTEM",bg="blue",fg="white",bd=5,relief=RAISED,padx=5,font=("cambria",20))
     title.pack()
@@ -46,7 +46,7 @@ def mainWindow():
 def profileDetails():
     global sn
     window1 = tk.Tk()
-    window1.geometry('650x400')
+    window1.geometry('750x400')
     window1.title("Student profile")
     title1 = Label(window1, text="STUDENT PROFILE", bg="blue", fg="white", bd=5, relief=RAISED, padx=5,font=("cambria", 20))
     title1.pack()
@@ -78,6 +78,7 @@ def profileDetails():
     divisionFetch = StringVar(frame2)
     courseFetch = StringVar(frame2)
     uin_noFetch = StringVar(frame2)
+    attenFetch = StringVar(frame2)
 
     label= Label(frame2,text="STUDENT NAME  :",bd=5, relief=FLAT, padx=5,font=("cambria", 14))
     label.grid(row =2,column=0)
@@ -97,10 +98,11 @@ def profileDetails():
     course = Entry(frame2, font=("cambria", 12),textvariable=courseFetch)
     course.grid(row=4, column=1)
 
-    # Remianing to add in db
+
     attendanceLabel= Label(frame2, text="MONTHLY ATTENDANCE :", bd=5, relief=FLAT, padx=5, font=("cambria", 14))
     attendanceLabel.grid(row=5, column=0)
-    attendance= Entry(frame2, font=("cambria", 12))
+
+    attendance= Entry(frame2, font=("cambria", 12),textvariable=attenFetch)
     attendance.grid(row=5, column=1)
 
     uin = Label(frame2, text="UIN NO. :", bd=5, relief=FLAT, padx=5, font=("cambria", 14))
@@ -108,6 +110,12 @@ def profileDetails():
 
     uinNo = Entry(frame2, font=("cambria", 12),textvariable=uin_noFetch)
     uinNo.grid(row=6, column=1)
+
+    student_details = Label(frame2, text="Other Details :", bd=5, relief=FLAT, padx=5, font=("cambria", 14))
+    student_details.grid(row = 2, column = 4)
+
+    stud = Entry(frame2, font=("cambria", 12))
+    stud.grid(row=2, column=5)
 
     # Created MySql Database connection to fetch Records using mysql connector module.
     db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
@@ -120,21 +128,25 @@ def profileDetails():
         getDiv = getDivision.get()
 
         # fetch name from table
-        cur.execute(("select name from SYBSC_CS where roll_no={} and division={}".format(getRollNo,getDiv)))
+        cur.execute(("select name from TYBSC_CS where rollno={} and division={}".format(getRollNo,getDiv)))
         result = cur.fetchall()
         nameFetch.set(result)
         # fetch division from table
-        cur.execute(("select division from SYBSC_CS where roll_no={} and division={}".format(getRollNo,getDiv)))
+        cur.execute(("select division from TYBSC_CS where rollno={} and division={}".format(getRollNo,getDiv)))
         result1 = cur.fetchall()
         divisionFetch.set(result1)
         # fetch course from table
-        cur.execute(("select course from SYBSC_CS where roll_no={} and division={}".format(getRollNo,getDiv)))
+        cur.execute(("select course from TYBSC_CS where rollno={} and division={}".format(getRollNo,getDiv)))
         result2 = cur.fetchall()
         courseFetch.set(result2)
         # fetch uin_no from table
-        cur.execute(("select uin_no from SYBSC_CS where roll_no={} and division={}".format(getRollNo,getDiv)))
+        cur.execute(("select uin_no from TYBSC_CS where rollno={} and division={}".format(getRollNo,getDiv)))
         result3 = cur.fetchall()
         uin_noFetch.set(result3)
+        # fetch Monthly Attendance from table
+        cur.execute(("select Monthly_Attendance from TYBSC_CS where rollno={} and division={}".format(getRollNo, getDiv)))
+        result4 = cur.fetchall()
+        attenFetch.set(result4)
 
 
 
