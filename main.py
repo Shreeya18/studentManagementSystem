@@ -147,7 +147,7 @@ def profileDetails():
         cur.execute(("select Monthly_Attendance from TYBSC_CS where rollno={} and division={}".format(getRollNo, getDiv)))
         result4 = cur.fetchall()
         attenFetch.set(result4)
-
+        cur.close()
 
 
     window1.mainloop()
@@ -155,6 +155,7 @@ def profileDetails():
 
 
 # Pending to do
+# Capture pic for attendance and add daily attendance to students database.
 def studentAttendance():
     win = tk.Tk()
     win.geometry('800x600')
@@ -176,6 +177,8 @@ def studentAttendance():
     checkattn = Button(f1,text="Attendance Details",font=("cambria", 12))
     checkattn.grid(row=2,column=1)
 
+
+# Updates or important notices if any can be shown in latest updates.
 def latestUpdates():
     win = tk.Tk()
     win.geometry('500x400')
@@ -188,6 +191,8 @@ def latestUpdates():
     t = Text(win,font=("cambria", 20),height=10,width=30)
     t.pack()
 
+
+# Student time table created according to teachers schedule and availability.
 def studentTimeTable():
     win = tk.Tk()
     win.geometry('500x400')
@@ -195,35 +200,57 @@ def studentTimeTable():
     l = Label(win, text="TODAY'S SCHEDULE", bg="blue", fg="white", bd=5, relief=RAISED, padx=5,
               font=("cambria", 20))
     l.pack()
+
+    # Created 3 course options to see TimeTable.
     f = Frame(win)
     f.pack()
+    # From BSC Course three years 1st 2nd and 3rd.
     courseOptions=['FYBSC-CS','SYBSC-CS','TYBSC-CS']
 
     var=StringVar(f)
     variable=StringVar(f)
     variable.set("Select Course")
+
     course = Label(f,text="Course :",font=("cambria",15 ))
     course.grid(row=0,column=0)
-    options_menu = OptionMenu(f,variable,*courseOptions)
+    # Select Courses from given options OPTIONS MENU
+    options_menu = OptionMenu(f,variable,*courseOptions,command=lambda y:sel())
     options_menu.grid(row=0,column=1)
+
     division = Label(f, text="DIV :", font=("cambria", 15))
     division.grid(row=0, column=2)
-    option_menu_div = OptionMenu(f,var,*('1','2'))
+    # Select Division from given OPTIONS MENU
+    option_menu_div = OptionMenu(f,var,*('1','2'),command=lambda x:sel())
     option_menu_div.grid(row=0,column=3)
 
-    fr=Frame(win)
+    fr = Frame(win)
     fr.pack()
-    ls=[("Time","Subject","Teacher","T.Attn"),("7:00-7:45","L.Alg","Preksha dixit",'P'),
-        ("7:45-8:25","FOA","Priyanka Sherkhane",'A'),("8:25-9:10",".NET","Pooja Tambe",'P')]
 
-    row=len(ls[0])
-    column = len(ls[0])
-    for i in range(row):
-        for j in range(column):
-            e = Entry(fr)
-            e.grid(row=i,column=j)
-            e.insert(END,ls[i][j])
+    def sel():
+        k = variable.get()
+        m = var.get()
 
+        db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
+        tcur = db.cursor(buffered=True)
+        tcur.execute("SELECT * FROM TSCHEDULE")
+        if k == "TYBSC-CS" and m == "1":
+            i = 0
+            for tschedule in tcur:
+                for j in range(len(tschedule)):
+                    e = Entry(fr, width=10, fg='blue')
+                    e.grid(row=i, column=j)
+                    e.insert(END, tschedule[j])
+                i = i + 1
+
+        if k == "TYBSC-CS" and m == "2":
+            tcur.execute(("SELECT * FROM TSCHEDULEI"))
+            i = 0
+            for tschedulei in tcur:
+                for j in range(len(tschedulei)):
+                    e = Entry(fr, width=10, fg='blue')
+                    e.grid(row=i, column=j)
+                    e.insert(END, tschedulei[j])
+                i = i + 1
 
 
 mainWindow()
