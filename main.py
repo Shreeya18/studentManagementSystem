@@ -195,10 +195,9 @@ def latestUpdates():
 # Student time table created according to teachers schedule and availability.
 def studentTimeTable():
     win = tk.Tk()
-    win.geometry('500x400')
+    win.geometry('700x260')
     win.title("Student profile")
-    l = Label(win, text="TODAY'S SCHEDULE", bg="blue", fg="white", bd=5, relief=RAISED, padx=5,
-              font=("cambria", 20))
+    l = Label(win, text="TODAY'S SCHEDULE", bg="blue", fg="white", bd=5, relief=RAISED, padx=5,font=("cambria", 20))
     l.pack()
 
     # Created 3 course options to see TimeTable.
@@ -207,50 +206,81 @@ def studentTimeTable():
     # From BSC Course three years 1st 2nd and 3rd.
     courseOptions=['FYBSC-CS','SYBSC-CS','TYBSC-CS']
 
-    var=StringVar(f)
-    variable=StringVar(f)
+    # Created variables for options menu to select and default value is set.
+    var = StringVar(f)
+    variable = StringVar(f)
     variable.set("Select Course")
+    var.set("Select Division")
 
     course = Label(f,text="Course :",font=("cambria",15 ))
     course.grid(row=0,column=0)
-    # Select Courses from given options OPTIONS MENU
+    # Select Courses from given options OPTIONS MENU.
     options_menu = OptionMenu(f,variable,*courseOptions,command=lambda y:sel())
+    options_menu.config(bg="#efba00",fg="#fff",font=("cambria", 15))
     options_menu.grid(row=0,column=1)
 
     division = Label(f, text="DIV :", font=("cambria", 15))
     division.grid(row=0, column=2)
     # Select Division from given OPTIONS MENU
     option_menu_div = OptionMenu(f,var,*('1','2'),command=lambda x:sel())
+    option_menu_div.config(bg="#efba00",fg="#fff",font=("cambria", 15))
     option_menu_div.grid(row=0,column=3)
 
+    # Created new frame to display schedule / Time table
     fr = Frame(win)
     fr.pack()
+
+    """ Defined function to get the values from options menu by using get()
+    Also Created connection for MySQL database to fetch the values/ whole schedule table from Tschedule and 
+    Tschedulei Tables from Student_profile database. 
+    Topics:
+    ---------------------------------------------------------------------------------------------------------------
+    buffered - MysqlCursorBuffered() is used where multiple queries with small result sets needs to be combined or
+    computed with each other. It fetches the entire result set (all the rows) from the server and buffers the rows.
+    .cursor(buffered = True Argument) : Only the current cursor will buffer the results.
+    ---------------------------------------------------------------------------------------------------------------
+    """
 
     def sel():
         k = variable.get()
         m = var.get()
-
         db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
         tcur = db.cursor(buffered=True)
-        tcur.execute("SELECT * FROM TSCHEDULE")
+
         if k == "TYBSC-CS" and m == "1":
+            tcur.execute("SELECT * FROM TSCHEDULE")
             i = 0
             for tschedule in tcur:
                 for j in range(len(tschedule)):
-                    e = Entry(fr, width=10, fg='blue')
+                    e = Text(fr, width=20, height=1, fg='blue', bg='Yellow',font=("cambria", 12))
                     e.grid(row=i, column=j)
                     e.insert(END, tschedule[j])
                 i = i + 1
 
-        if k == "TYBSC-CS" and m == "2":
+        elif k == "TYBSC-CS" and m == "2":
             tcur.execute(("SELECT * FROM TSCHEDULEI"))
             i = 0
             for tschedulei in tcur:
                 for j in range(len(tschedulei)):
-                    e = Entry(fr, width=10, fg='blue')
+                    e = Text(fr,width=20,height=1,fg='RED', bg='Yellow',font=("cambria", 12))
                     e.grid(row=i, column=j)
                     e.insert(END, tschedulei[j])
                 i = i + 1
 
 
 mainWindow()
+
+
+"""
+   Topics : 
+   ------------------------------------------------------------------------------------------------------------
+   To Create a MYSQL connection. 
+   mysql.connector.connect() ->  The connect() constructor creates a connection to MySql server and returns
+   MySQLConnection object
+   ============================================================================================================ 
+   .cursor() -> create Cursor object using cursor() method.
+   Using the methods of it can execute SQL statements, fetch data from the result sets, call procedures.
+   ------------------------------------------------------------------------------------------------------------
+   optionsmenu created
+
+"""
