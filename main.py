@@ -1,43 +1,47 @@
 print("I love Python!")
 
-#Imported Modules, tkinter and mysql connector
+#Imported Modules, tkinter and mysql connector (OpenCV to be imported)
 import tkinter as tk
 from tkinter import *
 import mysql.connector
+import cv2 as cv
+
+db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
+
 
 #The main Window from where we can select multiple options for required services
 def mainWindow():
     window = tk.Tk()
-    window.geometry('420x300')
+    window.geometry('420x290')
     window.title("Student Manager")
     title = Label(window,text="STUDENT MANAGEMENT SYSTEM",bg="blue",fg="white",bd=5,relief=RAISED,padx=5,font=("cambria",20))
     title.pack()
 
     #Main Frame with options to select
-    frame = Frame(window,bg="#487fff",width=400,height=400)
+    frame = Frame(window,bg="#4d0099",width=400,height=400)
     frame.pack()
-    studentProfileOption = Label(frame,text="STUDENT PROFILE",font=("cambria",20),bg="#487fff")
+    studentProfileOption = Label(frame,text="STUDENT PROFILE",font=("cambria",24),bg="#ccffcc")
     studentProfileOption.grid(row=0,column=0)
 
-    btn1= Button(frame,text="GO",font=("cambria",20),relief=RAISED,command=lambda:profileDetails(),bg="#99ff22")
+    btn1= Button(frame,text="GO",font=("cambria",22),relief=RAISED,command=lambda:profileDetails(),bg="#99ff22")
     btn1.grid(row=0,column=2)
 
-    attendanceOption = Label(frame, text="STUDENT ATTENDANCE", font=("cambria", 20), bg="#487fff")
+    attendanceOption = Label(frame, text="STUDENT ATTENDANCE", font=("cambria", 24), bg="#ccffcc")
     attendanceOption.grid(row=1, column=0)
 
-    btn2 = Button(frame, text="GO", font=("cambria", 20), relief=RAISED,command=lambda:studentAttendance(),bg="#99ff22")
+    btn2 = Button(frame, text="GO", font=("cambria", 22), relief=RAISED,command=lambda:studentAttendance(),bg="#99ff22")
     btn2.grid(row=1, column=2)
 
-    updatesOption = Label(frame, text="LATEST UPDATES", font=("cambria", 20), bg="#487fff")
+    updatesOption = Label(frame, text="LATEST UPDATES", font=("cambria", 24), bg="#ccffcc")
     updatesOption.grid(row=2, column=0)
 
-    btn3 = Button(frame, text="GO", font=("cambria", 20), relief=RAISED,command=lambda:latestUpdates(),bg="#99ff22")
+    btn3 = Button(frame, text="GO", font=("cambria", 22), relief=RAISED,command=lambda:latestUpdates(),bg="#99ff22")
     btn3.grid(row=2, column=2)
 
-    scheduleOption = Label(frame, text="TODAY'S SCHEDULE", font=("cambria", 20), bg="#487fff")
+    scheduleOption = Label(frame, text="TODAY'S SCHEDULE", font=("cambria", 24), bg="#ccffcc")
     scheduleOption.grid(row=3, column=0)
 
-    btn4 = Button(frame, text="GO", font=("cambria", 20), relief=RAISED, command=lambda:studentTimeTable(),bg="#99ff22")
+    btn4 = Button(frame, text="GO", font=("cambria", 22), relief=RAISED, command=lambda:studentTimeTable(),bg="#99ff22")
     btn4.grid(row=3, column=2)
 
     window.mainloop()
@@ -68,6 +72,23 @@ def profileDetails():
 
     btn = Button(frame1,text="ENTER",font=("cambria", 12),command=lambda:getDatad())
     btn.grid(row=1,column=1)
+
+    """addbtn = Button(frame1,text="ADD",font=("cambria", 12))
+    addbtn.grid(row=2,column=3)"""
+
+    # Created MySql Database connection to fetch Records using mysql connector module.
+    cur = db.cursor()
+
+    """def addDetails():
+        a = StringVar(frame1)
+        b = StringVar(frame1)
+        c = StringVar(frame1)
+        d = StringVar(frame1)
+        e = StringVar(frame1)
+        
+        
+        cur.execute("Insert into tybsc_cs values({},{},{},{},{})".format(a,b,c,d,e))"""
+
 
     # Next Frame to show all Student Details.
     frame2 = Frame(window1,width = 200, height = 200)
@@ -117,10 +138,6 @@ def profileDetails():
     stud = Entry(frame2, font=("cambria", 12))
     stud.grid(row=2, column=5)
 
-    # Created MySql Database connection to fetch Records using mysql connector module.
-    db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
-    cur = db.cursor()
-
     # Created Function to get details to fetch information and set them by executing queries
     def getDatad():
         global getRollNo,getDiv
@@ -154,28 +171,96 @@ def profileDetails():
 
 
 
-# Pending to do
 # Capture pic for attendance and add daily attendance to students database.
+# Use OpenCV capture image of user and store present for each valid face detection.
+# Store the image into database BLOB
 def studentAttendance():
     win = tk.Tk()
-    win.geometry('800x600')
+    win.geometry('900x250')
     win.title("Student profile")
     l = Label(win, text="STUDENT ATTENDANCE", bg="blue", fg="white", bd=5, relief=RAISED, padx=5,
               font=("cambria", 20))
     l.pack()
-    f = Frame(win, bg="#487fff")
 
-    f.pack(side=LEFT)
+    # Give Attendance Frame
+    f = Frame(win)
 
-    giveAttn = Button(f,text="Give Attendance",font=("cambria", 12))
-    giveAttn.grid(row=2,column=0)
+    f.pack()
+    def click():
+        getr = StringVar(f)
+        lroll = Label(f,text="Enter Roll No:- ",font=("Cambria",15))
+        lroll.grid(row=0,column=0)
+        e1roll = Entry(f,font=("Cambria",15),textvariable=getr)
+        e1roll.grid(row=0,column=1)
 
-    f1 = Frame(win, bg="#487fff")
+        im = cv.VideoCapture(0, cv.CAP_DSHOW)
+        count = 0
+        while True:
+            ret, img = im.read()
+            cv.imshow("Test", img)
+            if not ret:
+                break
+            k = cv.waitKey(1)
+            if k % 256 == 27:
+                print("Close")
+                break
+            elif k % 256 == 32:
+                print("Image" + str(count) + "saved")
+                file = "C://Users//HP//Desktop//imagecv" + str(count) + ".jpg"
+                cv.imwrite(file, img)
+                count += 1
 
-    f1.pack(side=RIGHT)
+        im.release()
+        cv.destroyAllWindows()
 
-    checkattn = Button(f1,text="Attendance Details",font=("cambria", 12))
+    # Two options (Buttons) 1. To Give Attendance 2. Attendance Details of Student accor. to Roll-No
+    giveAttn = Button(f, text="Give Attendance", font=("cambria", 14),fg="#fff", bg="#544725",relief=RAISED,command=lambda: click())
+    giveAttn.grid(row=2, column=0)
+
+    checkattn = Button(f,text="Attendance Details",font=("cambria", 14),bg="#9600c4",fg="#fff",relief=RAISED,command= lambda :attnDetails())
     checkattn.grid(row=2,column=1)
+
+    attnD = db.cursor()     # MySQL connection on top!
+        
+    # Attendance details
+    def attnDetails():
+        f1 = Frame(win)
+        f1.pack()
+
+        getroll = StringVar(f1)
+
+        # For Attendace Details Enter Roll No and Click on OK!
+        lroll = Label(f1,text="Enter Roll No:- ",font=("Cambria",15))
+        lroll.grid(row=0,column=0)
+        e1roll = Entry(f1,font=("Cambria",15),textvariable=getroll)
+        e1roll.grid(row=0,column=1)
+        btn = Button(f1,text="OK",font=("Cambria",15),bg="#1f4a29",fg="#fff",command=lambda :showAttnDetails())
+        btn.grid(row=0,column=2)
+
+        # After clicking OK fetch details of a students from Attn_details database and display it on the frame
+        def showAttnDetails():
+            # Labels to show details
+            l1 = Label(f1, text="Roll No: ", font=("Cambria", 15))
+            l1.grid(row=1, column=0)
+            l2 = Label(f1, text="Month: ", font=("Cambria", 15))
+            l2.grid(row=1, column=1)
+            l3 = Label(f1, text="Total Working Days: ", font=("Cambria", 15))
+            l3.grid(row=1, column=2)
+            l4 = Label(f1, text="Present Days: ", font=("Cambria", 15))
+            l4.grid(row=1, column=3)
+            l5 = Label(f1, text="Average Attendance: ", font=("Cambria", 15))
+            l5.grid(row=1, column=4)
+
+            # Details displaying after user input roll no
+            k = int(getroll.get())
+            attnD.execute(("SELECT * FROM ATTN_DETAILS WHERE ROLLNO={}".format(k)))
+            i = 3
+            for attn_details in attnD:
+                for j in range(len(attn_details)):
+                    e = Text(f1, width=15, height=1, fg='#01114d', bg='#d9ffd4', font=("cambria", 12))
+                    e.grid(row=i, column=j)
+                    e.insert(END, attn_details[j])
+                i = i + 1
 
 
 # Updates or important notices if any can be shown in latest updates.
@@ -244,7 +329,6 @@ def studentTimeTable():
     def sel():
         k = variable.get()
         m = var.get()
-        db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
         tcur = db.cursor(buffered=True)
 
         if k == "TYBSC-CS" and m == "1":
@@ -267,6 +351,8 @@ def studentTimeTable():
                     e.insert(END, tschedulei[j])
                 i = i + 1
 
+        tcur.close()
+
 
 mainWindow()
 
@@ -281,6 +367,6 @@ mainWindow()
    .cursor() -> create Cursor object using cursor() method.
    Using the methods of it can execute SQL statements, fetch data from the result sets, call procedures.
    ------------------------------------------------------------------------------------------------------------
-   optionsmenu created
+   open cv -->  Open source Library for Computer Vision, Machine Learning and Image Processing
 
 """
