@@ -1,13 +1,13 @@
 print("I love Python!")
 
-#Imported Modules, tkinter and mysql connector (OpenCV to be imported)
+#Imported Modules --> tkinter, Open cv and mysql connector
 import tkinter as tk
 from tkinter import *
 import mysql.connector
 import cv2 as cv
 
+#created MySQL database  STUDENT_PROFILE connection
 db = mysql.connector.connect(host="localhost", user="root", password="shree@18", database="student_profile")
-
 
 #The main Window from where we can select multiple options for required services
 def mainWindow():
